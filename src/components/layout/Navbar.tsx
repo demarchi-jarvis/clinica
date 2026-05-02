@@ -29,7 +29,7 @@ const NAV_ITEMS = [
 ]
 
 export default function Navbar() {
-  const { toggle, isDark } = useTheme()
+  const { toggle, isDark, mounted } = useTheme()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
@@ -190,12 +190,12 @@ export default function Navbar() {
                 whileTap={{ scale: 0.95 }}
                 className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors duration-200 hover:bg-indigo-500/10"
                 style={{ color: 'var(--fg-muted)' }}
-                aria-label={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}
+                aria-label={mounted ? (isDark ? 'Ativar modo claro' : 'Ativar modo escuro') : 'Alternar tema'}
               >
-                {isDark
+                {mounted && (isDark
                   ? <Sun size={17} aria-hidden="true" />
                   : <Moon size={17} aria-hidden="true" />
-                }
+                )}
               </motion.button>
 
               {/* CTA */}

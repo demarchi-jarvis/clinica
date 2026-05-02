@@ -1,20 +1,26 @@
 'use client'
 
-import { useCallback, useLayoutEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 type Theme = 'light' | 'dark'
 
-function getInitialTheme(): Theme {
-  if (typeof window === 'undefined') return 'dark'
-  const stored = localStorage.getItem('omnihealth-theme') as Theme | null
-  if (stored === 'light' || stored === 'dark') return stored
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-}
-
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>(getInitialTheme)
+  const [theme, setTheme] = useState<Theme>('light')
+  const [mounted, setMounted] = useState(false)
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    const stored = localStorage.getItem('omnihealth-theme') as Theme | null
+    const resolved =
+      stored === 'light' || stored === 'dark'
+        ? stored
+        : window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light'
+    setTheme(resolved)
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark')
   }, [theme])
 
@@ -26,5 +32,5 @@ export function useTheme() {
     })
   }, [])
 
-  return { theme, toggle, isDark: theme === 'dark' }
+  return { theme, toggle, isDark: theme === 'dark', mounted }
 }
